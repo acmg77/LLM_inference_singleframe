@@ -1,4 +1,4 @@
-# KuiperLLama
+# Single-machine inference framework
 
 一个使用 C++ / CUDA 实现的大模型推理项目，当前包含 Llama 系列和 Qwen 系列模型的部分推理与导出流程示例。
 

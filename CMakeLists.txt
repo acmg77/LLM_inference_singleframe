@@ -5,7 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Set the CUDA compiler path or name
 set(CMAKE_CUDA_COMPILER "/usr/local/cuda/bin/nvcc")
 
-project(llama_infer CXX CUDA)
+project(single_machine_inference_framework CXX CUDA)
 include(cmake/cuda.cmake)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -100,20 +100,20 @@ aux_source_directory(kuiper/source/sampler DIR_SAMPLE)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
-add_library(llama SHARED ${DIR_TENSOR} ${DIR_BASE} ${DIR_OP} ${DIR_KERNEL} ${DIR_MODEL} ${DIR_KERNEL_CPU} ${DIR_KERNEL_CUDA} ${DIR_KERNEL} ${DIR_SAMPLE})
-target_link_libraries(llama sentencepiece glog::glog gtest gtest_main pthread cudart armadillo)
-target_link_directories(llama PUBLIC ${CMAKE_CUDA_COMPILER_LIBRARY_ROOT}/lib64)
+add_library(single_machine_inference_framework SHARED ${DIR_TENSOR} ${DIR_BASE} ${DIR_OP} ${DIR_KERNEL} ${DIR_MODEL} ${DIR_KERNEL_CPU} ${DIR_KERNEL_CUDA} ${DIR_KERNEL} ${DIR_SAMPLE})
+target_link_libraries(single_machine_inference_framework sentencepiece glog::glog gtest gtest_main pthread cudart armadillo)
+target_link_directories(single_machine_inference_framework PUBLIC ${CMAKE_CUDA_COMPILER_LIBRARY_ROOT}/lib64)
 
-target_include_directories(llama PUBLIC ${glog_INCLUDE_DIR})
-target_include_directories(llama PUBLIC ${PROJECT_SOURCE_DIR}/kuiper/include)
-target_include_directories(llama PUBLIC ${Armadillo_INCLUDE_DIR})
-target_include_directories(llama PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+target_include_directories(single_machine_inference_framework PUBLIC ${glog_INCLUDE_DIR})
+target_include_directories(single_machine_inference_framework PUBLIC ${PROJECT_SOURCE_DIR}/kuiper/include)
+target_include_directories(single_machine_inference_framework PUBLIC ${Armadillo_INCLUDE_DIR})
+target_include_directories(single_machine_inference_framework PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
 if(USE_CPM)
   # Add sentencepiece include directory
-  target_include_directories(llama PUBLIC ${sentencepiece_SOURCE_DIR}/src)
+  target_include_directories(single_machine_inference_framework PUBLIC ${sentencepiece_SOURCE_DIR}/src)
 endif()
 
-set_target_properties(llama PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+set_target_properties(single_machine_inference_framework PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 add_subdirectory(test)
 add_subdirectory(demo)

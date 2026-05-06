@@ -1,0 +1,58 @@
+# KuiperLLama - CUDA 支持版 Dockerfile
+# 基础镜像：CUDA 12.1 + Ubuntu 22.04（含开发工具链）
+FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
+
+# 避免交互式提示
+ENV DEBIAN_FRONTEND=noninteractive
+
+# --- 1. 安装所有依赖（全部走 apt，无需访问 GitHub）---
+RUN apt-get update -o Acquire::Retries=5 -o Acquire::http::Timeout=120 && \
+    apt-get install -y --no-install-recommends --fix-missing \
+        build-essential \
+        cmake \
+        git \
+        wget \
+        pkg-config \
+        python3 \
+        python3-pip \
+        python3-torch \
+        # Nsight Systems CLI
+        cuda-nsight-systems-12-1 \
+        # Armadillo + 线性代数后端
+        libarmadillo-dev \
+        libopenblas-dev \
+        liblapack-dev \
+        libarpack2-dev \
+        libsuperlu-dev \
+        # Google Test
+        libgtest-dev \
+        # Google glog
+        libgoogle-glog-dev \
+        # Qwen/Llama3 额外依赖
+        libabsl-dev \
+        libre2-dev \
+        nlohmann-json3-dev \
+        # SentencePiece
+        libsentencepiece-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- 2. 编译安装 libgtest（apt 只装了源码，需手动编译）---
+RUN cd /usr/src/googletest && \
+    cmake -DCMAKE_BUILD_TYPE=Release . && \
+    make -j$(nproc) && \
+    make install && \
+    ldconfig
+
+# --- 3. 预装 Qwen 导出依赖 ---
+RUN python3 -m pip install --no-cache-dir \
+        safetensors \
+        sentencepiece \
+        transformers==4.43.1
+
+# --- 4. 设置 CUDA / Nsight 环境变量 ---
+ENV PATH=/usr/local/cuda/bin:/opt/nvidia/nsight-systems/2023.1.2/bin:${PATH}
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
+ENV CUDA_HOME=/usr/local/cuda
+
+WORKDIR /workspaces/KuiperLLama
+CMD ["bash"]

@@ -1,0 +1,94 @@
+# Build artifacts
+/build/
+/bin/
+/dist/
+/out/
+/cmake-build-*/
+/lib/*.so
+/lib/*.a
+/lib/*.lib
+/lib/*.dll
+/lib/*.dylib
+/lib/*.exp
+/lib/*.pdb
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+Testing/
+CTestTestfile.cmake
+
+# Compiler / linker outputs
+*.o
+*.obj
+*.lo
+*.la
+*.a
+*.lib
+*.so
+*.so.*
+*.dll
+*.dylib
+*.exe
+*.exp
+*.pdb
+*.out
+*.app
+*.idb
+*.ilk
+*.manifest
+*.dep
+*.d
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDE / editor files
+.vscode/
+.idea/
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+/tmp/
+*.tmp
+*.temp
+*.log
+*.cache
+
+# Profiling / analysis outputs
+*.nsys-rep
+*.sqlite
+/report_qwen25_05b_full.nsys-rep
+/report_qwen25_05b_full.sqlite
+/report_rmsnorm_stream2.nsys-rep
+/report_rmsnorm_stream2.sqlite
+/report_qwen25_05b_full_gpukernsum.txt
+# Large local model artifacts
+*.bin
+*.safetensors
+/models/
+
+# Local repo-specific files
+/.clang-format
+/核心算子梳理.md
+/cpp_cuda_features_summary.md
+# Optional local dependency/vendor caches
+_cpm/

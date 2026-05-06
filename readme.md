@@ -1,139 +1,156 @@
-# KuiperLLama 动手自制大模型推理框架，支持LLama2/3和Qwen2.5
-> News：新课发布，《动手自制大模型推理框架》，全手写cuda算子，课程框架支持LLama2和3.x以及Qwen2.5模型
+# KuiperLLama
 
-Hi，各位朋友们好！我是 KuiperInfer 的作者。KuiperInfer 作为一门开源课程，迄今已经在 GitHub 上已斩获 2.5k star。
-如今在原课程的基础上，**我们全新推出了《动手自制大模型推理框架》， 新课程支持Llama系列大模型（包括最新的LLama3.2）以及Qwen2.5系列大模型，同时支持 Cuda 加速和 Int8 量化**，自推出以来便广受好评。
+一个使用 C++ / CUDA 实现的大模型推理项目，当前包含 Llama 系列和 Qwen 系列模型的部分推理与导出流程示例。
 
-## 《动手自制大模型推理框架》课程目录：
-https://tvle9mq8jh.feishu.cn/docx/AGb0dpqwfohQ9oxx4QycqbCjnJh
-## 《动手自制大模型推理框架》课程优势
+## 项目说明
 
-1. 采用最新的C++ 20标准去写代码，统一、美观的代码风格，良好的错误处理；
-2. 优秀的项目管理形式，我们采用CMake+Git的方式管理项目，接轨大厂；
-3. 授人以渔，教大家怎么设计一个现代C++项目，同时教大家怎么用单元测试和Benchmark去测试验证自己的项目； 
-4. CPU算子和CUDA双后端实现，对时新的大模型（LLama3和Qwen系列）有非常好的支持。
+这个仓库主要包含以下内容：
 
+- 基于 CMake 的 C++ / CUDA 工程结构
+- 常见推理算子的 CPU / CUDA 实现
+- Llama / Qwen 部分模型的推理示例
+- 模型导出相关脚本
+- 单元测试与简单验证代码
 
-**如果你对大模型推理感兴趣，想要深入了解并掌握相关技术，想在校招、秋招面试当中脱颖而出，那么这门《动手自制大模型推理框架》课程绝对不容错过。快来加入我们，一起开启学习之旅吧！
-    感兴趣的同学欢迎扫一扫课程下方二维码或者添加微信 lyrry1997 参加课程**
+## 目录结构
 
-<img src="imgs/me.jpg"  />
+- `kuiper/`：核心推理框架代码
+- `demo/`：推理示例入口
+- `test/`：测试代码
+- `tools/`：模型导出与辅助脚本
+- `hf_infer/`：Hugging Face 侧参考推理脚本
+- `cmake/`：CMake 辅助脚本
+- `models/`：本地模型目录示例
 
+## 依赖
 
+项目依赖以下组件：
 
-## 《动手自制大模型推理框架》课程项目运行效果
-> LLama1.1b fp32模型，视频无加速，运行平台为Nvidia 3060 laptop，速度为60.34 token/s
+1. [glog](https://github.com/google/glog)
+2. [googletest](https://github.com/google/googletest)
+3. [sentencepiece](https://github.com/google/sentencepiece)
+4. [armadillo](https://arma.sourceforge.net/download.html)
+5. CUDA Toolkit
 
-![](./imgs/do.gif)
+如果本地未安装完整依赖，可以在配置 CMake 时启用 `USE_CPM=ON` 自动拉取部分依赖。
 
+## 编译
 
+```shell
+mkdir build
+cd build
+cmake ..
+make -j16
+```
 
-## 第三方依赖
-> 借助企业级开发库，更快地搭建出大模型推理框架
-1. google glog https://github.com/google/glog
-2. google gtest https://github.com/google/googletest
-3. sentencepiece https://github.com/google/sentencepiece
-4. armadillo + openblas https://arma.sourceforge.net/download.html
-5. Cuda Toolkit
+如果希望通过 CPM 自动下载部分依赖：
 
+```shell
+mkdir build
+cd build
+cmake -DUSE_CPM=ON ..
+make -j16
+```
 
-## 模型下载地址
-1. LLama2 https://pan.baidu.com/s/1PF5KqvIvNFR8yDIY1HmTYA?pwd=ma8r 或 https://huggingface.co/fushenshen/lession_model/tree/main
+## 基本运行
 
-2. Tiny LLama 
-- TinyLLama模型 https://huggingface.co/karpathy/tinyllamas/tree/main
-- TinyLLama分词器 https://huggingface.co/yahma/llama-7b-hf/blob/main/tokenizer.model
+### Llama 示例
 
-3. Qwen2.5/LLama
-   
-   请参考本项目配套课程，课程参加方式请看本文开头。
+```shell
+./build/demo/llama_infer llama2_7b.bin tokenizer.model
+```
 
+### Qwen 示例
+
+```shell
+./build/demo/qwen_infer Qwen2.5-0.5B.bin Qwen/Qwen2.5-0.5B/tokenizer.json
+```
 
 ## 模型导出
-```shell
-python export.py llama2_7b.bin --meta-llama path/to/llama/model/7B
-# 使用--hf标签从hugging face中加载模型， 指定--version3可以导出量化模型
-# 其他使用方法请看export.py中的命令行参数实例
-```
 
+### Llama 3.2
 
-## 编译方法
-```shell
-  mkdir build 
-  cd build
-  # 需要安装上述的第三方依赖
-  cmake ..
-  # 或者开启 USE_CPM 选项，自动下载第三方依赖
-  cmake -DUSE_CPM=ON ..
-  make -j16
-```
+以 `meta-llama/Llama-3.2-1B` 为例：
 
-## 生成文本的方法
-```shell
-./llama_infer llama2_7b.bin tokenizer.model
+1. 下载模型：
 
-```
-
-# LLama3.2 推理
-
-- 以 meta-llama/Llama-3.2-1B 为例，huggingface 上下载模型：
 ```shell
 export HF_ENDPOINT=https://hf-mirror.com
 pip3 install huggingface-cli
 huggingface-cli download --resume-download meta-llama/Llama-3.2-1B --local-dir meta-llama/Llama-3.2-1B --local-dir-use-symlinks False
 ```
-- 导出模型：
+
+2. 导出二进制模型：
+
 ```shell
 python3 tools/export.py Llama-3.2-1B.bin --hf=meta-llama/Llama-3.2-1B
 ```
-- 编译：
+
+3. 编译：
+
 ```shell
-mkdir build 
+mkdir build
 cd build
-# 开启 USE_CPM 选项，自动下载第三方依赖，前提是需要网络畅通
-cmake -DUSE_CPM=ON -DLLAMA3_SUPPORT=ON .. 
+cmake -DUSE_CPM=ON -DLLAMA3_SUPPORT=ON ..
 make -j16
 ```
-- 运行：
+
+4. 运行：
+
 ```shell
 ./build/demo/llama_infer Llama-3.2-1B.bin meta-llama/Llama-3.2-1B/tokenizer.json
-# 和 huggingface 推理的结果进行对比
 python3 hf_infer/llama3_infer.py
 ```
 
-# Qwen2.5 推理
+### Qwen 2.5
 
-- 以 Qwen2.5-0.5B 为例，huggingface 上下载模型：
+以 `Qwen/Qwen2.5-0.5B` 为例：
+
+1. 下载模型：
+
 ```shell
 export HF_ENDPOINT=https://hf-mirror.com
 pip3 install huggingface-cli
 huggingface-cli download --resume-download Qwen/Qwen2.5-0.5B --local-dir Qwen/Qwen2.5-0.5B --local-dir-use-symlinks False
 ```
-- 导出模型：
+
+2. 导出二进制模型：
+
 ```shell
 python3 tools/export_qwen2.py Qwen2.5-0.5B.bin --hf=Qwen/Qwen2.5-0.5B
 ```
-- 编译：
+
+3. 编译：
+
 ```shell
-mkdir build 
+mkdir build
 cd build
-# 开启 USE_CPM 选项，自动下载第三方依赖，前提是需要网络畅通
-cmake -DUSE_CPM=ON -DQWEN2_SUPPORT=ON .. 
+cmake -DUSE_CPM=ON -DQWEN2_SUPPORT=ON ..
 make -j16
 ```
-- 运行：
+
+4. 运行：
+
 ```shell
 ./build/demo/qwen_infer Qwen2.5-0.5B.bin Qwen/Qwen2.5-0.5B/tokenizer.json
-# 和 huggingface 推理的结果进行对比
 python3 hf_infer/qwen2_infer.py
 ```
 
-## Qwen3推理
-和上面同理，我们先从huggingface仓库中将模型下载到本地。
-1. tools/export_qwen3/load.py中导出为pth，模型的输入`model_name`和输出地址`output_file`依次需要填写；
-2. 导出pth格式的模型后，再用同文件夹下的write_bin.py导出qwen.bin；
-3. 用CMake选项`QWEN3_SUPPORT`重新编译项目，其他步骤就都是一样的了。
+### Qwen 3
 
-##编译命令
-```docker run --rm --gpus all --privileged --pid=host -v "f:\cs336\CUDA_Frame\KuiperLLama-main:/workspaces/KuiperLLama" -w /workspaces/KuiperLLama kuiper-llama:cuda bash -lc "rm -rf build && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DQWEN2_SUPPORT=ON .. && make -j8 && nsys profile --trace=cuda,nvtx,osrt --sample=none -o /workspaces/KuiperLLama/report_qwen25_05b_full ./demo/qwen_infer /workspaces/KuiperLLama/Qwen2.5-0.5B-Instruct.bin /workspaces/KuiperLLama/models/Qwen/Qwen2.5-0.5B-Instruct/tokenizer.json"
+Qwen 3 的导出流程在 `tools/export_qwen3/` 目录下，通常分为两步：
+
+1. 在 `tools/export_qwen3/load.py` 中配置输入模型名与输出路径，导出为 `pth`
+2. 使用同目录下的 `write_bin.py` 将中间结果导出为可用于推理的二进制文件
+
+编译时需要启用：
+
+```shell
+cmake -DQWEN3_SUPPORT=ON ..
 ```
+
+## 说明
+
+- `models/` 目录下的模型文件通常较大，适合本地保存，不建议直接提交到仓库。
+- profiling 结果、构建目录和导出的二进制文件建议通过 `.gitignore` 排除。
+- 具体实现细节可以从 `kuiper/source/` 和 `kuiper/include/` 开始阅读。
